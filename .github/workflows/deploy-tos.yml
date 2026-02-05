@@ -8,9 +8,9 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     env:
-      TOS_BUCKET: ${{ secrets.TOS_BUCKET }}
+      TOS_BUCKET: ${{ secrets.BUCKET }}
       TOS_ENDPOINT: ${{ secrets.TOS_ENDPOINT }}
-      TOS_REGION: ${{ secrets.TOS_REGION }}
+      TOS_REGION: ${{ secrets.REGION }}
       API_BASE: ${{ secrets.API_BASE }}
     steps:
       - name: Checkout
@@ -39,10 +39,11 @@ jobs:
 
       - name: Sync to TOS
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.TOS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.TOS_SECRET_ACCESS_KEY }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.VOLC_AK }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.VOLC_SK }}
         run: |
+          endpoint="${TOS_ENDPOINT:-https://tos-${TOS_REGION}.volces.com}"
           aws s3 sync dist/ "s3://${TOS_BUCKET}/" \
-            --endpoint-url "${TOS_ENDPOINT}" \
+            --endpoint-url "${endpoint}" \
             --region "${TOS_REGION}" \
             --delete
