@@ -43,7 +43,13 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.VOLC_SK }}
         run: |
           endpoint="${TOS_ENDPOINT}"
-          aws s3 cp dist/ "s3://${TOS_BUCKET}/" \
-            --endpoint-url "${endpoint}" \
-            --region "${TOS_REGION}" \
-            --recursive
+          export AWS_S3_ADDRESSING_STYLE=path
+          while IFS= read -r -d '' file; do
+            key="${file#dist/}"
+            aws s3api put-object \
+              --bucket "${TOS_BUCKET}" \
+              --key "${key}" \
+              --body "${file}" \
+              --endpoint-url "${endpoint}" \
+              --region "${TOS_REGION}"
+          done < <(find dist -type f -print0)
