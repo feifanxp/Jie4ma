@@ -21,7 +21,14 @@ const SYSTEM_PROMPT = [
   "4) definition 用简体中文，控制在 40 字以内。",
 ].join("\n");
 
-const API_URL = "/api/analyze";
+const resolveApiUrl = () => {
+  const apiBase = window.APP_CONFIG?.apiBase || "";
+  const trimmed = apiBase.replace(/\/+$/, "");
+  if (!trimmed) return "/api/analyze";
+  return `${trimmed}/api/analyze`;
+};
+
+const API_URL = resolveApiUrl();
 
 const setStatus = (message, type = "info") => {
   statusText.textContent = message;
