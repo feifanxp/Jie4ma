@@ -34,3 +34,27 @@
 
 - 前端不保存 API Key，服务端通过环境变量读取。
 - 服务端默认模型为 `deepseek-chat`，可通过 `DEEPSEEK_MODEL` 修改。
+
+## Cloudflare Workers 后端代理
+
+用于隐藏 DeepSeek Key，提供 `/api/analyze` 接口。
+
+### 部署步骤
+
+1. 安装 Wrangler：
+   - `npm install -g wrangler`
+2. 登录：
+   - `wrangler login`
+3. 在项目根目录部署：
+   - `wrangler deploy`
+4. 配置密钥（仅一次）：
+   - `wrangler secret put DEEPSEEK_API_KEY`
+
+部署后会得到一个 Worker 访问地址，例如：  
+`https://jie4ma-api.<你的账户>.workers.dev`
+
+### 绑定前端
+
+把 `config.js` 里的 `apiBase` 设置为上面的 Worker 地址，或在 Pages 构建命令里注入：
+
+`echo "window.APP_CONFIG={apiBase:'https://jie4ma-api.<你的账户>.workers.dev'};" > config.js && npm run build`
