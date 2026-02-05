@@ -19,6 +19,17 @@
    - `npm run build`
 3. 将 `dist/` 整个目录上传到 TOS
 
+## GitHub 自动部署到 TOS
+
+推送到 `main` 后会自动构建并同步到 TOS。需要在 GitHub Secrets 配置：
+
+- `TOS_ACCESS_KEY_ID`
+- `TOS_SECRET_ACCESS_KEY`
+- `TOS_BUCKET`
+- `TOS_ENDPOINT`（示例：`https://tos-cn-beijing.volces.com`）
+- `TOS_REGION`（示例：`cn-beijing`）
+- `API_BASE`（后端服务地址，可留空）
+
 ## 说明
 
 - 前端不保存 API Key，服务端通过环境变量读取。
