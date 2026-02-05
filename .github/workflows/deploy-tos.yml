@@ -34,8 +34,8 @@ jobs:
 
       - name: Install AWS CLI
         run: |
-          sudo apt-get update
-          sudo apt-get install -y awscli
+          python3 -m pip install --upgrade pip
+          python3 -m pip install awscli
 
       - name: Sync to TOS
         env:
