@@ -1,0 +1,13 @@
+{
+  "name": "ai-concept-highlighter",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AI 概念拆解与高亮工具",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.3"
+  }
+}
