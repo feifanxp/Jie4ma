@@ -164,17 +164,24 @@ const analyzeText = async () => {
       }),
     });
 
+    const responseText = await response.text();
+    let responseJson = null;
+    try {
+      responseJson = responseText ? JSON.parse(responseText) : null;
+    } catch (error) {
+      responseJson = null;
+    }
+
     if (!response.ok) {
-      const errorBody = await response.json().catch(async () => {
-        const errorText = await response.text();
-        return { message: errorText };
-      });
       const errorMessage =
-        errorBody?.error?.message || errorBody?.message || "未知错误";
+        responseJson?.error?.message ||
+        responseJson?.message ||
+        responseText ||
+        "未知错误";
       throw new Error(`API 请求失败：${response.status} ${errorMessage}`);
     }
 
-    const data = await response.json();
+    const data = responseJson;
     const terms = parseTermsFromResponse(data);
 
     if (!terms.length) {
