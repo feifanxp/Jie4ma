@@ -5,18 +5,22 @@
 body {
   margin: 0;
   font-family: "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
-  background: #f5f7fb;
-  color: #1f2937;
+  background: radial-gradient(circle at top, #eef2ff, #f8fafc 55%, #eef2f7);
+  color: #111827;
 }
 
 .app {
-  max-width: 960px;
+  max-width: 1200px;
   margin: 32px auto 64px;
   padding: 0 20px;
 }
 
 .header {
   margin-bottom: 24px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
 }
 
 .header h1 {
@@ -29,12 +33,96 @@ body {
   color: #6b7280;
 }
 
+.header-meta {
+  font-size: 13px;
+  color: #6b7280;
+  background: #eef2ff;
+  border-radius: 999px;
+  padding: 6px 12px;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 960px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}
+
 .panel {
   background: #fff;
   border-radius: 12px;
   padding: 20px;
   margin-bottom: 16px;
-  box-shadow: 0 8px 20px rgba(31, 41, 55, 0.08);
+  box-shadow: 0 16px 30px rgba(15, 23, 42, 0.08);
+}
+
+.sidebar {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 16px 30px rgba(15, 23, 42, 0.08);
+  height: fit-content;
+  position: sticky;
+  top: 24px;
+}
+
+.sidebar h2 {
+  margin: 0 0 8px;
+  font-size: 18px;
+}
+
+.sidebar-desc {
+  margin: 0 0 16px;
+  color: #6b7280;
+  font-size: 13px;
+}
+
+.saved-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.saved-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 12px;
+  background: #f9fafb;
+}
+
+.saved-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.saved-badge {
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #e0e7ff;
+  color: #3730a3;
+}
+
+.saved-desc {
+  margin: 0;
+  color: #374151;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.saved-empty {
+  margin-top: 8px;
+  color: #9ca3af;
+  font-size: 13px;
 }
 
 .field {
@@ -76,13 +164,15 @@ button {
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  background: #2563eb;
+  background: linear-gradient(135deg, #2563eb, #4f46e5);
   color: #fff;
+  box-shadow: 0 8px 16px rgba(37, 99, 235, 0.2);
 }
 
 button.secondary {
-  background: #e5e7eb;
+  background: #f3f4f6;
   color: #111827;
+  box-shadow: none;
 }
 
 button:disabled {
@@ -103,10 +193,11 @@ button:disabled {
 }
 
 .term {
-  background: #fef3c7;
+  background: rgba(253, 230, 138, 0.6);
   border-bottom: 2px solid #f59e0b;
-  padding: 0 2px;
+  padding: 0 3px;
   cursor: help;
+  border-radius: 4px;
 }
 
 .tooltip {

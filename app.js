@@ -4,6 +4,13 @@ const inputText = document.getElementById("inputText");
 const output = document.getElementById("output");
 const statusText = document.getElementById("status");
 const tooltip = document.getElementById("tooltip");
+const savedList = document.getElementById("savedList");
+const savedEmpty = document.getElementById("savedEmpty");
+
+const SAMPLE_TEXT =
+  "总体建议：采用“人机协作 + 语义向量”体系，20 万字段属于中等规模。最适合采用 embedding 语义聚类 + LLM 辅助命名 + 人工校对。多层级结构可通过聚类树生成。";
+
+const savedTerms = new Map();
 
 const SYSTEM_PROMPT = [
   "你是一个教学助手。",
@@ -18,7 +25,8 @@ const SYSTEM_PROMPT = [
   "1) 只返回 JSON，不要额外解释。",
   "2) term 必须出现在原文中，保持原文的大小写与写法。",
   "3) 优先识别 AI/ML/计算机术语或缩写（如 LLM、RAG、embedding）。",
-  "4) definition 用简体中文，控制在 40 字以内。",
+  "4) 给出分类 category，短语即可，例如：模型/算法/数据/工程/应用/评估/其他。",
+  "5) definition 用简体中文，控制在 40 字以内。",
 ].join("\n");
 
 const resolveApiUrl = () => {
@@ -68,6 +76,7 @@ const buildHighlightHtml = (text, terms) => {
     findAllMatches(text, item.term).map((match) => ({
       ...match,
       definition: item.definition,
+      category: item.category,
     }))
   );
 
@@ -95,8 +104,9 @@ const buildHighlightHtml = (text, terms) => {
     }
     const termText = escapeHtml(text.slice(match.start, match.end));
     const defText = escapeHtml(match.definition);
+    const catText = escapeHtml(match.category || "其他");
     parts.push(
-      `<span class="term" data-definition="${defText}">${termText}</span>`
+      `<span class="term" data-definition="${defText}" data-category="${catText}" data-term="${termText}">${termText}</span>`
     );
     cursor = match.end;
   }
@@ -131,22 +141,48 @@ const parseTermsFromResponse = (data) => {
   return parsed.terms
     .filter(
       (item) =>
-        item && typeof item.term === "string" && typeof item.definition === "string"
+        item &&
+        typeof item.term === "string" &&
+        typeof item.definition === "string"
     )
     .map((item) => ({
       term: item.term.trim(),
       definition: item.definition.trim(),
+      category: String(item.category || "其他").trim(),
     }))
     .filter((item) => item.term.length > 0 && item.definition.length > 0);
 };
 
+const renderSavedTerms = () => {
+  savedList.innerHTML = "";
+  const terms = Array.from(savedTerms.values());
+  if (!terms.length) {
+    savedEmpty.style.display = "block";
+    return;
+  }
+  savedEmpty.style.display = "none";
+  for (const item of terms) {
+    const card = document.createElement("div");
+    card.className = "saved-card";
+    card.innerHTML = `
+      <div class="saved-title">
+        <span>${escapeHtml(item.term)}</span>
+        <span class="saved-badge">${escapeHtml(item.category || "其他")}</span>
+      </div>
+      <p class="saved-desc">${escapeHtml(item.definition)}</p>
+    `;
+    savedList.appendChild(card);
+  }
+};
+
 const analyzeText = async () => {
-  const text = inputText.value.trim();
+  let text = inputText.value.trim();
 
   output.innerHTML = "";
   if (!text) {
-    setStatus("请输入需要分析的文本。", "warn");
-    return;
+    text = SAMPLE_TEXT;
+    inputText.value = text;
+    setStatus("已使用示例文本进行解析。", "info");
   }
 
   setLoading(true);
@@ -211,6 +247,8 @@ const clearAll = () => {
   inputText.value = "";
   output.innerHTML = "";
   setStatus("");
+  savedTerms.clear();
+  renderSavedTerms();
 };
 
 const showTooltip = (event) => {
@@ -252,3 +290,18 @@ clearBtn.addEventListener("click", clearAll);
 output.addEventListener("mouseover", showTooltip);
 output.addEventListener("mousemove", positionTooltip);
 output.addEventListener("mouseout", hideTooltip);
+
+output.addEventListener("click", (event) => {
+  const target = event.target;
+  if (!target.classList.contains("term")) return;
+  const term = target.dataset.term || target.textContent.trim();
+  const definition = target.dataset.definition || "";
+  const category = target.dataset.category || "其他";
+  if (!term) return;
+  if (!savedTerms.has(term)) {
+    savedTerms.set(term, { term, definition, category });
+    renderSavedTerms();
+  }
+});
+
+renderSavedTerms();
