@@ -58,6 +58,10 @@ export default {
         endpoint = "https://api.openai.com/v1/chat/completions";
         apiKey = env.OPENAI_API_KEY || "";
         model = String(env.OPENAI_MODEL || payload.model || "gpt-4o-mini").trim();
+      } else if (provider === "ark") {
+        endpoint = String(env.ARK_ENDPOINT || "").trim();
+        apiKey = env.ARK_API_KEY || "";
+        model = String(env.ARK_MODEL || payload.model || "").trim();
       } else {
         endpoint = "https://api.deepseek.com/chat/completions";
         apiKey = env.DEEPSEEK_API_KEY || "";
@@ -65,8 +69,23 @@ export default {
       }
 
       if (!apiKey) {
-        const keyName = provider === "openai" ? "OPENAI_API_KEY" : "DEEPSEEK_API_KEY";
+        const keyName =
+          provider === "openai"
+            ? "OPENAI_API_KEY"
+            : provider === "ark"
+            ? "ARK_API_KEY"
+            : "DEEPSEEK_API_KEY";
         return jsonResponse({ message: `Missing ${keyName}` }, 500, origin);
+      }
+
+      if (!endpoint) {
+        const endpointName = provider === "ark" ? "ARK_ENDPOINT" : "endpoint";
+        return jsonResponse({ message: `Missing ${endpointName}` }, 500, origin);
+      }
+
+      if (!model) {
+        const modelName = provider === "ark" ? "ARK_MODEL" : "model";
+        return jsonResponse({ message: `Missing ${modelName}` }, 500, origin);
       }
 
       const response = await fetch(endpoint, {

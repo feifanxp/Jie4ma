@@ -37,7 +37,7 @@
 
 ## Cloudflare Workers 后端代理
 
-用于隐藏大模型 Key，提供 `/api/analyze` 接口，支持 DeepSeek / ChatGPT。
+用于隐藏大模型 Key，提供 `/api/analyze` 接口，支持 DeepSeek / ChatGPT / 火山方舟。
 
 ### 部署步骤
 
@@ -50,11 +50,14 @@
 4. 配置密钥（仅一次）：
    - DeepSeek：`wrangler secret put DEEPSEEK_API_KEY`
    - ChatGPT：`wrangler secret put OPENAI_API_KEY`
+   - 方舟：`wrangler secret put ARK_API_KEY`
 
 可选变量（可在 Cloudflare 控制台里设置或修改 `wrangler.toml` 的 `[vars]`）：
-   - `PROVIDER`：`deepseek` 或 `openai`
+   - `PROVIDER`：`deepseek` / `openai` / `ark`
    - `DEEPSEEK_MODEL`：默认 `deepseek-chat`
    - `OPENAI_MODEL`：默认 `gpt-4o-mini`
+   - `ARK_ENDPOINT`：方舟 OpenAI 兼容接口地址
+   - `ARK_MODEL`：默认 `doubao-seed-1-6-lite-251015`
 
 部署后会得到一个 Worker 访问地址，例如：  
 `https://jie4ma-api.<你的账户>.workers.dev`
