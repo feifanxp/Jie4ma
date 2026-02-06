@@ -34,10 +34,6 @@ export default {
       return jsonResponse({ message: "Method Not Allowed" }, 405, origin);
     }
 
-    if (!env.DEEPSEEK_API_KEY) {
-      return jsonResponse({ message: "Missing DEEPSEEK_API_KEY" }, 500, origin);
-    }
-
     let payload;
     try {
       payload = await request.json();
@@ -50,33 +46,49 @@ export default {
       return jsonResponse({ message: "Text is required" }, 400, origin);
     }
 
-    const model = String(payload.model || "deepseek-chat").trim();
     const systemPrompt = String(payload.systemPrompt || "");
+    const provider = String(env.PROVIDER || "deepseek").toLowerCase();
 
     try {
-      const response = await fetch(
-        "https://api.deepseek.com/chat/completions",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${env.DEEPSEEK_API_KEY}`,
-          },
-          body: JSON.stringify({
-            model,
-            messages: [
-              { role: "system", content: systemPrompt },
-              { role: "user", content: text },
-            ],
-            temperature: 0.2,
-          }),
-        }
-      );
+      let endpoint = "";
+      let apiKey = "";
+      let model = "";
+
+      if (provider === "openai") {
+        endpoint = "https://api.openai.com/v1/chat/completions";
+        apiKey = env.OPENAI_API_KEY || "";
+        model = String(env.OPENAI_MODEL || payload.model || "gpt-4o-mini").trim();
+      } else {
+        endpoint = "https://api.deepseek.com/chat/completions";
+        apiKey = env.DEEPSEEK_API_KEY || "";
+        model = String(env.DEEPSEEK_MODEL || payload.model || "deepseek-chat").trim();
+      }
+
+      if (!apiKey) {
+        const keyName = provider === "openai" ? "OPENAI_API_KEY" : "DEEPSEEK_API_KEY";
+        return jsonResponse({ message: `Missing ${keyName}` }, 500, origin);
+      }
+
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
+          model,
+          messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: text },
+          ],
+          temperature: 0.2,
+        }),
+      });
 
       const data = await response.json().catch(() => null);
       if (!response.ok) {
         const errorMessage =
-          data?.error?.message || data?.message || "DeepSeek request failed";
+          data?.error?.message || data?.message || "Upstream request failed";
         return jsonResponse(
           { message: errorMessage, status: response.status },
           response.status,
