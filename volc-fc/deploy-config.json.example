@@ -1,0 +1,13 @@
+{
+  "host": "open.volcengineapi.com",
+  "service": "vefaas",
+  "region": "cn-beijing",
+  "action": "UpdateFunction",
+  "version": "2021-04-01",
+  "body": {
+    "ServiceName": "YOUR_SERVICE_NAME",
+    "FunctionName": "YOUR_FUNCTION_NAME",
+    "SourceType": "tos",
+    "SourceLocation": "tos://YOUR_BUCKET/YOUR_OBJECT_KEY"
+  }
+}

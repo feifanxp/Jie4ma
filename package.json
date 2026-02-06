@@ -6,9 +6,11 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "build": "node build.js"
+    "build": "node build.js",
+    "deploy:volc": "node scripts/deploy-volc-fc.js"
   },
   "dependencies": {
+    "@volcengine/openapi": "^1.1.6",
     "dotenv": "^17.2.3"
   }
 }

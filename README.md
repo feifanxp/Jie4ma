@@ -36,3 +36,37 @@
 把 Cloudflare Pages 的 Build command 改为：
 
 `echo "window.APP_CONFIG={apiBase:'https://<你的函数网关域名>'};" > config.js && npm run build`
+
+## 本地脚本自动更新函数代码（Volcengine SDK）
+
+该脚本使用官方 SDK 进行 OpenAPI 调用，更新函数代码来源（TOS）。
+
+### 1) 准备配置
+
+复制配置模板并填写：
+
+```
+cp volc-fc/deploy-config.json.example volc-fc/deploy-config.json
+```
+
+需要填写的字段：
+
+- `ServiceName`：函数服务名
+- `FunctionName`：函数名
+- `SourceLocation`：TOS 代码包地址（示例 `tos://bucket/path.zip`）
+- `version`：UpdateFunction API 版本（以控制台文档为准）
+
+### 2) 设置环境变量
+
+```
+export VOLC_ACCESSKEY=你的AK
+export VOLC_SECRETKEY=你的SK
+```
+
+### 3) 执行更新
+
+```
+npm run deploy:volc
+```
+
+> 说明：当前脚本会读取 `volc-fc/deploy-config.json`，并通过 OpenAPI 调用更新函数。
