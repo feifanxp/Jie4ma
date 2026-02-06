@@ -67,3 +67,24 @@
 把 `config.js` 里的 `apiBase` 设置为上面的 Worker 地址，或在 Pages 构建命令里注入：
 
 `echo "window.APP_CONFIG={apiBase:'https://jie4ma-api.<你的账户>.workers.dev'};" > config.js && npm run build`
+
+## 火山函数计算后端（国内可直连）
+
+适用于国内网络环境，作为 `/api/analyze` 代理。
+
+### 函数代码
+
+见 `volc-fc/index.js`，采用 Node.js 运行时。
+
+### 环境变量
+
+- `ARK_API_KEY`：方舟 API Key（必填）
+- `ARK_ENDPOINT`：方舟 OpenAI 兼容接口地址  
+  推荐完整地址：`https://ark.cn-beijing.volces.com/api/v3/chat/completions`
+- `ARK_MODEL`：默认 `doubao-seed-1-6-lite-251015`
+
+### 接入前端
+
+把 Cloudflare Pages 的 Build command 改为：
+
+`echo "window.APP_CONFIG={apiBase:'https://<你的函数网关域名>'};" > config.js && npm run build`
