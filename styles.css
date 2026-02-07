@@ -104,12 +104,38 @@ body {
   margin-bottom: 6px;
 }
 
+.saved-term {
+  flex: 1;
+  min-width: 0;
+}
+
+.saved-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
 .saved-badge {
   font-size: 12px;
   padding: 2px 8px;
   border-radius: 999px;
   background: #e0e7ff;
   color: #3730a3;
+}
+
+.saved-remove {
+  border: none;
+  background: #fee2e2;
+  color: #991b1b;
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  cursor: pointer;
+  box-shadow: none;
+}
+
+.saved-remove:hover {
+  background: #fecaca;
 }
 
 .saved-desc {

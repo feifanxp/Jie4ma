@@ -11,6 +11,8 @@ const SAMPLE_TEXT =
   "总体建议：采用“人机协作 + 语义向量”体系，20 万字段属于中等规模。最适合采用 embedding 语义聚类 + LLM 辅助命名 + 人工校对。多层级结构可通过聚类树生成。";
 
 const savedTerms = new Map();
+const COOKIE_KEY = "saved_terms";
+const COOKIE_MAX_DAYS = 365;
 
 const SYSTEM_PROMPT = [
   "你是一个教学助手。",
@@ -46,6 +48,54 @@ const setStatus = (message, type = "info") => {
 const setLoading = (loading) => {
   analyzeBtn.disabled = loading;
   analyzeBtn.textContent = loading ? "分析中..." : "分析并高亮";
+};
+
+const readCookie = (name) => {
+  const prefix = `${name}=`;
+  const cookies = document.cookie ? document.cookie.split("; ") : [];
+  for (const item of cookies) {
+    if (item.startsWith(prefix)) {
+      return decodeURIComponent(item.slice(prefix.length));
+    }
+  }
+  return "";
+};
+
+const writeCookie = (name, value, maxDays) => {
+  const maxAge = Math.max(0, Math.floor(maxDays * 24 * 60 * 60));
+  document.cookie = `${name}=${encodeURIComponent(
+    value
+  )}; Max-Age=${maxAge}; Path=/; SameSite=Lax`;
+};
+
+const persistSavedTerms = () => {
+  if (!savedTerms.size) {
+    writeCookie(COOKIE_KEY, "", 0);
+    return;
+  }
+  const payload = JSON.stringify(Array.from(savedTerms.values()));
+  writeCookie(COOKIE_KEY, payload, COOKIE_MAX_DAYS);
+};
+
+const loadSavedTerms = () => {
+  const raw = readCookie(COOKIE_KEY);
+  if (!raw) return;
+  try {
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return;
+    parsed.forEach((item) => {
+      if (!item || typeof item.term !== "string") return;
+      const term = item.term.trim();
+      if (!term) return;
+      savedTerms.set(term, {
+        term,
+        definition: String(item.definition || "").trim(),
+        category: String(item.category || "其他").trim() || "其他",
+      });
+    });
+  } catch (error) {
+    writeCookie(COOKIE_KEY, "", 0);
+  }
 };
 
 const escapeHtml = (value) =>
@@ -166,8 +216,13 @@ const renderSavedTerms = () => {
     card.className = "saved-card";
     card.innerHTML = `
       <div class="saved-title">
-        <span>${escapeHtml(item.term)}</span>
-        <span class="saved-badge">${escapeHtml(item.category || "其他")}</span>
+        <span class="saved-term">${escapeHtml(item.term)}</span>
+        <div class="saved-actions">
+          <span class="saved-badge">${escapeHtml(item.category || "其他")}</span>
+          <button class="saved-remove" type="button" data-term="${escapeHtml(
+            item.term
+          )}">删除</button>
+        </div>
       </div>
       <p class="saved-desc">${escapeHtml(item.definition)}</p>
     `;
@@ -248,6 +303,7 @@ const clearAll = () => {
   output.innerHTML = "";
   setStatus("");
   savedTerms.clear();
+  persistSavedTerms();
   renderSavedTerms();
 };
 
@@ -300,8 +356,20 @@ output.addEventListener("click", (event) => {
   if (!term) return;
   if (!savedTerms.has(term)) {
     savedTerms.set(term, { term, definition, category });
+    persistSavedTerms();
     renderSavedTerms();
   }
 });
 
+savedList.addEventListener("click", (event) => {
+  const target = event.target;
+  if (!target.classList.contains("saved-remove")) return;
+  const term = target.dataset.term;
+  if (!term || !savedTerms.has(term)) return;
+  savedTerms.delete(term);
+  persistSavedTerms();
+  renderSavedTerms();
+});
+
+loadSavedTerms();
 renderSavedTerms();
