@@ -247,3 +247,10 @@ button:disabled {
   opacity: 1;
   transform: translateY(0);
 }
+
+.footer {
+  margin-top: 24px;
+  text-align: center;
+  color: #9ca3af;
+  font-size: 12px;
+}

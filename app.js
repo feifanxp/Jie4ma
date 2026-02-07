@@ -6,6 +6,7 @@ const statusText = document.getElementById("status");
 const tooltip = document.getElementById("tooltip");
 const savedList = document.getElementById("savedList");
 const savedEmpty = document.getElementById("savedEmpty");
+const appVersion = document.getElementById("appVersion");
 
 const SAMPLE_TEXT =
   "总体建议：采用“人机协作 + 语义向量”体系，20 万字段属于中等规模。最适合采用 embedding 语义聚类 + LLM 辅助命名 + 人工校对。多层级结构可通过聚类树生成。";
@@ -39,6 +40,7 @@ const resolveApiUrl = () => {
 };
 
 const API_URL = resolveApiUrl();
+const APP_VERSION = window.APP_CONFIG?.version || "1.0.0";
 
 const setStatus = (message, type = "info") => {
   statusText.textContent = message;
@@ -49,6 +51,10 @@ const setLoading = (loading) => {
   analyzeBtn.disabled = loading;
   analyzeBtn.textContent = loading ? "分析中..." : "分析并高亮";
 };
+
+if (appVersion) {
+  appVersion.textContent = APP_VERSION;
+}
 
 const readCookie = (name) => {
   const prefix = `${name}=`;
