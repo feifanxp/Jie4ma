@@ -125,17 +125,23 @@ body {
 
 .saved-remove {
   border: none;
-  background: #fee2e2;
-  color: #991b1b;
-  font-size: 12px;
-  padding: 2px 8px;
+  width: 22px;
+  height: 22px;
+  line-height: 22px;
+  text-align: center;
   border-radius: 999px;
+  background: #f3f4f6;
+  color: #6b7280;
+  font-size: 16px;
+  font-weight: 600;
   cursor: pointer;
   box-shadow: none;
+  padding: 0;
 }
 
 .saved-remove:hover {
-  background: #fecaca;
+  background: #fee2e2;
+  color: #991b1b;
 }
 
 .saved-desc {
