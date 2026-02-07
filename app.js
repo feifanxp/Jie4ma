@@ -225,9 +225,9 @@ const renderSavedTerms = () => {
         <span class="saved-term">${escapeHtml(item.term)}</span>
         <div class="saved-actions">
           <span class="saved-badge">${escapeHtml(item.category || "其他")}</span>
-          <button class="saved-remove" type="button" data-term="${escapeHtml(
+          <button class="saved-remove" type="button" aria-label="删除词条" data-term="${escapeHtml(
             item.term
-          )}">删除</button>
+          )}">×</button>
         </div>
       </div>
       <p class="saved-desc">${escapeHtml(item.definition)}</p>
@@ -360,11 +360,13 @@ output.addEventListener("click", (event) => {
   const definition = target.dataset.definition || "";
   const category = target.dataset.category || "其他";
   if (!term) return;
-  if (!savedTerms.has(term)) {
-    savedTerms.set(term, { term, definition, category });
-    persistSavedTerms();
-    renderSavedTerms();
+  if (savedTerms.has(term)) {
+    setStatus(`“${term}” 已在词库中。`, "info");
+    return;
   }
+  savedTerms.set(term, { term, definition, category });
+  persistSavedTerms();
+  renderSavedTerms();
 });
 
 savedList.addEventListener("click", (event) => {
